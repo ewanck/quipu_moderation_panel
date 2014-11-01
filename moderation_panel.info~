@@ -1,0 +1,5 @@
+name = Moderation Panel
+description = Creates moderation panel to view/edit phoneline content.
+core = 7.x
+
+stylesheets[all][] = css/moderation.css

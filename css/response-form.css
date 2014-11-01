@@ -1,0 +1,186 @@
+#form-next-btn {
+    opacity:0;
+    transition:1s;
+    text-align:center;
+    margin-top:60px;
+    margin-bottom:80px;
+}
+
+.form-item-field-audiomessage-und-0 label{
+    display:none;
+}
+
+.form-item label {
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 300;
+    font-size:14px;
+}
+
+.important-instruction {
+    border-top:1px dashed #FF7054;
+    border-bottom:1px dashed #FF7054;
+    padding-top:26px;
+    padding-bottom:26px;
+    color:#FF7054;
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 300;
+    font-size:14px;
+    line-height:24px;
+    width:558px;
+    margin-left:-45px;
+    margin-top:60px;
+}
+
+.important {
+    display:inline-block;
+}
+
+.important-text {
+    width:500px;
+}
+
+.important-icon {
+    font-weight:700;
+    font-size:40px;
+    width:58px;
+    text-align:center;
+}
+#form-admin-wrap #response-form-1, #form-admin-wrap #response-form-2, #form-admin-wrap #form-finish, #form-admin-wrap #edit submit {
+    display:block;
+    opacity:1;
+}
+
+#form-finish {
+    opacity:0;
+    transition:1s;
+}
+
+#response-form-1 {
+    transition:1s;
+}
+
+#response-form-2 {
+    display:none;
+    opacity:0;
+    transition:1s;
+    transition-delay:1s;
+}
+
+.response-form {
+    position:relative;
+    top:30px;
+}
+
+.form-item {
+    margin:0px;
+}
+
+p {
+    margin:0px;
+}
+
+#location-instruction {
+    margin-top:90px;
+}
+
+#edit-submit {
+    opacity:0;
+    transition:1s;
+}
+
+.description {
+    display:none;
+}
+
+.instruction {
+    width:100%;
+    text-align:center;
+}
+
+.form-submit {
+    margin-top:60px;
+    margin-bottom:90px;
+}
+
+#tutorial-wrapper {   
+    z-index:1000;
+    position:fixed;
+    top:40px;
+    left:34%;
+    display:none;
+}
+
+#tutorial-wrapper.step2 {
+    top:300px;
+    left:72%;
+}
+
+#tutorial-wrapper.step2 #tutorial-arrow {
+    -moz-transform: scaleX(-1) rotate(130deg);
+    -o-transform: scaleX(-1) rotate(130deg);
+    -webkit-transform: scaleX(-1) rotate(130deg);
+    transform: scaleX(-1) rotate(130deg);
+    filter: FlipV;
+    -ms-filter: "FlipV";
+    position:relative;
+    left:-20px;
+    top:50px;
+}
+
+#tutorial-box {
+    width:230px;
+    padding:15px;
+    background:rgba(255,112,84,0.93);
+    border-radius:2px;
+    color:white;
+    font-family:'Apercu';
+    position:relative;
+    left:54px;
+    top:-30px;
+    -webkit-box-shadow: 3px 3px 26px 0px rgba(50, 50, 50, 0.75);
+    -moz-box-shadow:    3px 3px 26px 0px rgba(50, 50, 50, 0.75);
+    box-shadow:         3px 3px 26px 0px rgba(50, 50, 50, 0.75);
+}
+
+.tutorial-content {
+    display:inline-block;
+}
+
+#tutorial-text {
+    margin-bottom:15px;
+    font-size:12px;
+    line-height:1.2em;
+}
+
+#tutorial-title {
+    font-size:20px;
+    margin-bottom:15px;
+}
+
+#tutorial-controls div {
+    display:inline-block;
+}
+
+#tutorial-controls {
+    text-align:center;
+}
+
+.tutorial-step {
+    width:7px;
+    height:7px;
+    border-radius:7px;
+    background:rgba(255,112,84,1);
+    display:inline-block;
+}
+
+.tutorial-step.on {
+    background:#DDD;
+}
+
+#tutorial-next {
+    float:right;
+}
+
+#tutorial-prev {
+    float:left;
+}
