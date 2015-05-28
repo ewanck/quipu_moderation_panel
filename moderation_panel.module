@@ -13,12 +13,12 @@ function moderation_panel_block_info() {
 function moderation_panel_block_view($delta = '') {
   switch ($delta) {
     case 'moderation_panel':
-      $block['subject'] = t('Modertaion Block');
+      $block['subject'] = t('Publish Data');
       if (user_access('access content')) {
         $items = array();
        // No content in the last week.
         if (empty($items)) {
-          $block['content'] = t('No posts available.');
+          $block['content'] = '<form method="post" action="http://sandbox.chakafilms.com/sandbox/projectquipu/publishdata"><input value="Publish Data" type="submit"></form>';
         }
         else {
           // Pass data through theme function.
@@ -29,6 +29,66 @@ function moderation_panel_block_view($delta = '') {
     return $block;
   }
 }
+
+function moderation_panel_menu() {
+  $item['publishdata'] = array(
+    'type' => MENU_CALLBACK,
+    'page callback' => 'moderation_panel_publish_data',
+    'access arguments' => array('access content'),
+    'delivery callback' => 'drupal_json_output',
+  );
+  return $item;
+};
+
+function moderation_panel_publish_data() {
+  $testimonies = moderation_panel_load_ready();
+  $csv = "";
+  foreach ($testimonies as $testimony) {
+    $csv .= sprintf("%s,%s,%s,%s,%s,%s,%s,%s\n",$testimony['filename'], $testimony['name'], $testimony['audio_file'], $testimony['srt'], $testimony['length'], $testimony['gender'], $testimony['location'], $testimony['date']);
+  };
+  $json = drupal_json_encode($testimonies);
+  $json_file = file_save_data($json, 'public://output/data.json', FILE_EXISTS_REPLACE);
+  $file = file_save_data($csv, 'public://output/data.csv', FILE_EXISTS_REPLACE);
+  return $file->uri;
+};
+
+function moderation_panel_load_ready() {
+  $callback = array();
+  $query = new EntityFieldQuery();
+  $query->entityCondition('entity_type', 'node')
+    ->fieldCondition('field_moderated', 'value', 1, '=')
+    ->fieldCondition('field_subtitles_es_complete', 'value', 1, '=')
+    ->fieldCondition('field_subtitles_en_complete', 'value', 1, '=')
+    ->propertyCondition('status', 1)
+    ->propertyCondition('type', 'audio_story')
+    ->propertyOrderBy('created', 'DESC');
+  $results = $query->execute();
+  if (isset($results['node'])) {
+    $nodes = node_load_multiple(array_keys($results['node']));
+    foreach ($nodes as $node) {
+      $filename = $node->title;
+      $length = field_get_items('node', $node, 'field_length');
+      $audio_file = field_get_items('node', $node, 'field_audio_link');
+      $name = field_get_items('node', $node, 'field_name');
+      $location = field_get_items('node', $node, 'field_narrative_location');
+      $gender = field_get_items('node', $node, 'field_gender');
+      $testimony = array(
+        'filename' => $filename,
+        'length' => $length[0]['value'],
+        'audio_file' => $audio_file[0]['value'],
+        'name' => $name[0]['value'],
+	'location' => $location[0]['value'],
+	'gender' => $gender[0]['value'],
+	'srt' => $filename . '.srt',
+	'date' => date('d-m-Y H:i:s',$node->created),
+      );
+      $callback[] = $testimony;
+    };
+  };
+  return $callback; 
+};
+
+
 
 function moderation_panel_theme($existing, $type, $theme, $path) {
   return array(
