@@ -72,6 +72,7 @@ function moderation_panel_load_ready() {
       $name = field_get_items('node', $node, 'field_name');
       $location = field_get_items('node', $node, 'field_narrative_location');
       $gender = field_get_items('node', $node, 'field_gender');
+      $srt = $node->field_srt_en['und'][0]['filename'];
       $testimony = array(
         'filename' => $filename,
         'length' => $length[0]['value'],
@@ -79,7 +80,7 @@ function moderation_panel_load_ready() {
         'name' => $name[0]['value'],
 	'location' => $location[0]['value'],
 	'gender' => $gender[0]['value'],
-	'srt' => $filename . '.srt',
+	'srt' => $srt,
 	'date' => date('d-m-Y H:i:s',$node->created),
       );
       $callback[] = $testimony;
