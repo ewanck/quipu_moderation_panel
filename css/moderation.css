@@ -46,7 +46,7 @@ input[type=checkbox]:not(old) {
     width   : 28px;
     margin  : 0;
     padding : 0;
-    opacity : 0;
+    opacity : 1;
 }
 
 .publish_controls input[type=checkbox]:not(old) + label{
