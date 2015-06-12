@@ -46,7 +46,7 @@ function moderation_panel_publish_data() {
   foreach ($testimonies as $testimony) {
     $csv .= sprintf("%s,%s,%s,%s,%s,%s,%s,%s\n",$testimony['filename'], $testimony['name'], $testimony['audio_file'], $testimony['srt'], $testimony['length'], $testimony['gender'], $testimony['location'], $testimony['date']);
   };
-  $json = drupal_json_encode($testimonies);
+  $json = drupal_json_encode($testimonies, JSON_FORCE_OBJECT);
   $json_file = file_save_data($json, 'public://output/data.json', FILE_EXISTS_REPLACE);
   $file = file_save_data($csv, 'public://output/data.csv', FILE_EXISTS_REPLACE);
   return $file->uri;
@@ -98,7 +98,7 @@ function moderation_panel_load_ready() {
 	'SRT' => $srt,
         'UID' => $filename,
 	'events' => $knots_obj,
-	'next' => array(),
+	'next' => array('blank' => null),
       );
       $callback[$filename] = $testimony;
     };
