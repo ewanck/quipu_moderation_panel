@@ -77,3 +77,7 @@ input[type=checkbox]:not(old):hover + label{
 input[type=checkbox]:not(old):checked + label{
     background-color:#4D4;
 }
+
+#subtitles-info {
+    width:100%;
+}
