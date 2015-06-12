@@ -68,29 +68,69 @@ function moderation_panel_load_ready() {
     foreach ($nodes as $node) {
       $filename = $node->title;
       $length = field_get_items('node', $node, 'field_length');
-      $audio_file = field_get_items('node', $node, 'field_audio_link');
-      $audio = explode('/', $audio_file[0]['value']);
+      $audio_file = explode( '/', $node->field_audio_link['und'][0]['value']);
       $name = field_get_items('node', $node, 'field_name');
       $location = field_get_items('node', $node, 'field_narrative_location');
       $gender = field_get_items('node', $node, 'field_gender');
-      $srt = explode('/', $node->field_srt_en['und'][0]['uri']);
+      $role = taxonomy_term_load($node->field_narrative_role['und'][0]['tid']);
+      $user = user_load($node->uid);
+      if ($user->name == 'Guest') {
+        $source = 'Internet';
+      } else {
+        $source = 'Phoneline';
+      };
+      $srt = $node->field_srt_en['und'][0]['filename'];
+      $knots = field_get_items('node', $node, 'field_knots_file');
+      if ($knots) {
+        $knots_obj = csv_to_json($knots[0]['uri'], $filename, $name);
+      } else {
+        $knots_obj = array();
+      };
       $testimony = array(
-        'filename' => $filename,
-        'length' => $length[0]['value'],
-        'audio_file' => $audio[6],
-        'name' => $name[0]['value'],
-	'location' => $location[0]['value'],
-	'gender' => $gender[0]['value'],
-	'srt' => $srt[4],
-	'date' => date('d-m-Y H:i:s',$node->created),
+        'Audio Lang' => $node->field_audio_language['und'][0]['value'],
+	'Filename' => $audio_file[6],
+	'Gender' => $gender[0]['value'],
+	'Length' => $length[0]['value'],
+	'Location' => $location[0]['value'],
+	'Name' => $name[0]['value'],
+	'Phoneline / Internet' => $source,
+	'Role' => $role->name,
+	'SRT' => $srt,
+        'UID' => $filename,
+	'events' => $knots_obj,
+	'next' => array(),
       );
-      $callback[] = $testimony;
+      $callback[$filename] = $testimony;
     };
   };
   return $callback; 
 };
 
-
+function csv_to_json($uri, $uid, $name) {
+  $result = array();
+  $i = 0;
+  $file = fopen($uri,"r");
+  while(! feof($file))  {
+    $line = fgetcsv($file);
+    if ($i > 0) {
+      $result[] = array(
+        'Action' => $line[3],
+        'File' => $line[7],
+        'LibraryName' => $line[6],
+        'MediaType' => $line[5],
+        'Name' => $name[0]['value'],
+        'Tag' => $line[0],
+        'UID' => $uid,
+        'isKnot' => $line[4],
+        'time_in' => $line[1],
+        'time_out' => $line[2],
+      );
+    };
+    $i = $i + 1;
+  };
+  fclose($file);
+  return $result;
+}
 
 function moderation_panel_theme($existing, $type, $theme, $path) {
   return array(
