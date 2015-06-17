@@ -44,7 +44,7 @@ function moderation_panel_publish_data() {
   $testimonies = moderation_panel_load_ready();
   $csv = "";
   foreach ($testimonies as $testimony) {
-    $csv .= sprintf("%s,%s,%s,%s,%s,%s,%s,%s\n",$testimony['filename'], $testimony['name'], $testimony['audio_file'], $testimony['srt'], $testimony['length'], $testimony['gender'], $testimony['location'], $testimony['date']);
+    $csv .= sprintf("%s,%s,%s,%s,%s,%s,%s,%s\n",$testimony['UID'], $testimony['Name'], $testimony['Filename'], $testimony['SRT'], $testimony['Length'], $testimony['Gender'], $testimony['Location']);
   };
   $json = drupal_json_encode($testimonies, JSON_FORCE_OBJECT);
   $json_file = file_save_data($json, 'public://output/data.json', FILE_EXISTS_REPLACE);
