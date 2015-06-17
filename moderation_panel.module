@@ -43,10 +43,10 @@ function moderation_panel_menu() {
 function moderation_panel_publish_data() {
   $testimonies = moderation_panel_load_ready();
   $csv = "";
-  foreach ($testimonies as $testimony) {
-    $csv .= sprintf("%s,%s,%s,%s,%s,%s,%s,%s\n",$testimony['UID'], $testimony['Name'], $testimony['Filename'], $testimony['SRT'], $testimony['Length'], $testimony['Gender'], $testimony['Location']);
-  };
-  $json = drupal_json_encode($testimonies, JSON_FORCE_OBJECT);
+//  foreach ($testimonies as $testimony) {
+//    $csv .= sprintf("%s,%s,%s,%s,%s,%s,%s,%s\n",$testimony['filename'], $testimony['name'], $testimony['audio_file'], $testimony['srt'], $testimony['length'], $testimony['gender'], $testimony['location'], $testimony['date']);
+//  };
+  $json = drupal_json_encode($testimonies);
   $json_file = file_save_data($json, 'public://output/data.json', FILE_EXISTS_REPLACE);
   $file = file_save_data($csv, 'public://output/data.csv', FILE_EXISTS_REPLACE);
   return $file->uri;
@@ -56,7 +56,7 @@ function moderation_panel_load_ready() {
   $callback = array();
   $query = new EntityFieldQuery();
   $query->entityCondition('entity_type', 'node')
-    ->fieldCondition('field_moderated', 'value', 1, '=')
+//    ->fieldCondition('field_moderated', 'value', 1, '=')
     ->fieldCondition('field_subtitles_es_complete', 'value', 1, '=')
     ->fieldCondition('field_subtitles_en_complete', 'value', 1, '=')
     ->propertyCondition('status', 1)
@@ -68,7 +68,13 @@ function moderation_panel_load_ready() {
     foreach ($nodes as $node) {
       $filename = $node->title;
       $length = field_get_items('node', $node, 'field_length');
-      $audio_file = explode( '/', $node->field_audio_link['und'][0]['value']);
+      if($node->field_to_edit['und'][0]['value'] == 1) {
+      	$audio_link = $node->field_basic_edit['und'][0]['filename'];
+      } else {
+        $audio_link = $node->field_audio_file['und'][0]['filename'];
+      };
+
+//      $audio_file = explode( '/', $node->field_audio_link['und'][0]['value']);
       $name = field_get_items('node', $node, 'field_name');
       $location = field_get_items('node', $node, 'field_narrative_location');
       $gender = field_get_items('node', $node, 'field_gender');
@@ -88,7 +94,7 @@ function moderation_panel_load_ready() {
       };
       $testimony = array(
         'Audio Lang' => $node->field_audio_language['und'][0]['value'],
-	'Filename' => $audio_file[6],
+	'Filename' => $audio_link,
 	'Gender' => $gender[0]['value'],
 	'Length' => $length[0]['value'],
 	'Location' => $location[0]['value'],
@@ -223,7 +229,24 @@ function template_preprocess_audio_story_node_form(&$variables) {
     hide($variables['form']['field_moderated']);
     $variables['notes'] = $variables['form']['field_moderator_notes'];
     hide($variables['form']['field_moderator_notes']);
-
+    $variables['gender'] = $variables['form']['field_gender'];
+    hide($variables['form']['field_gender']);
+    $variables['location'] = $variables['form']['field_narrative_location'];
+    hide($variables['form']['field_narrative_location']);
+    $variables['srt_en'] = $variables['form']['field_srt_en'];
+    hide($variables['form']['field_srt_en']);
+    $variables['srt_es'] = $variables['form']['field_srt_es'];
+    hide($variables['form']['field_srt_es']);
+    $variables['to_edit'] = $variables['form']['field_to_edit'];
+    hide($variables['form']['field_to_edit']);
+    $variables['basic_edit'] = $variables['form']['field_basic_edit'];
+    hide($variables['form']['field_basic_edit']);
+    $variables['knots_file'] = $variables['form']['field_knots_file'];
+    hide($variables['form']['field_knots_file']);
+    $variables['donotpublish'] = $variables['form']['field_do_not_publish'];
+    hide($variables['form']['field_do_not_publish']);
+    $variables['contentious'] = $variables['form']['field_contentious'];
+    hide($variables['form']['field_contentious']);
 
     $variables['subs_sent'] = '';
     $variables['subs_es'] = '';
