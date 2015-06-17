@@ -1,3 +1,14 @@
+#pop-up {
+    position:fixed;
+    top:50%:
+    left:50%;
+    display:none;
+    height:100px;
+    width:250px;
+    text-align:center;
+    background-color:#555;
+}
+
 .progress_light {
     width:30px;
     height:30px;
@@ -35,11 +46,49 @@
 
 #panel_right {
     float:right;
-    width:50%;
+    width:500px;
+    position:relative;
+    top:250px;
+    float:right;
+    left:100px;
 }
 
+#testimony-controls {
+    float:right;
+    width:600px;;
+}
+
+.text_input table {
+    width:40%;
+}
 .publish_controls {
     float:right;
+    
+}
+
+.action-button {
+    width:175px;
+    height:50px;
+    background-color:#AAA;
+    border-radius:20px;
+    text-align:center;
+    padding-top:15px;
+}
+
+.action-button:hover {
+    background-color:#4D4;
+}
+
+.action-button.emergency-button {
+    background-color:#D33;
+}
+
+.extra {
+    display:none;
+}
+
+.select-input {
+    float:left;
 }
 
 input[type=checkbox]:not(old) {
