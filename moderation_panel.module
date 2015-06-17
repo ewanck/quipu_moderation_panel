@@ -18,7 +18,7 @@ function moderation_panel_block_view($delta = '') {
         $items = array();
        // No content in the last week.
         if (empty($items)) {
-          $block['content'] = '<form method="post" action="http://sandbox.chakafilms.com/sandbox/projectquipu/publishdata"><input value="Publish Data" type="submit"></form>';
+          $block['content'] = '<form method="post" action="http://phoneline.quipu-project.com/publishdata"><input value="Publish Data" type="submit"></form>';
         }
         else {
           // Pass data through theme function.
@@ -104,7 +104,7 @@ function moderation_panel_load_ready() {
 	'SRT' => $srt,
         'UID' => $filename,
 	'events' => $knots_obj,
-	'next' => array(),
+	'next' => array('blank' => null),
       );
       $callback[$filename] = $testimony;
     };
