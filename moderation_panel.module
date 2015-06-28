@@ -209,9 +209,9 @@ function template_preprocess_audio_story_node_form(&$variables) {
 //    hide($variables['form']['field_recording_fid']);
 //    hide($variables['form']['field_length']);
 //    hide($variables['form']['field_audio_link']);
-//    hide($variables['form']['options']);
-//    hide($variables['form']['additional_settings']);
-//    hide($variables['form']['author']);
+    hide($variables['form']['options']);
+    hide($variables['form']['additional_settings']);
+    hide($variables['form']['author']);
     hide($variables['form']['comment_settings']);
 //    hide($variables['form']['field_audio_file']);
 //    hide($variables['form']['field_english_transcript']);
@@ -248,8 +248,8 @@ function template_preprocess_audio_story_node_form(&$variables) {
     $variables['contentious'] = $variables['form']['field_contentious'];
     hide($variables['form']['field_contentious']);
 
-    $variables['subs_sent'] = '';
-    $variables['subs_es'] = '';
+    $variables['readystate'] = 'Unmoderated';
+    $variables['readyclass'] = 'unmoderated';
     $variables['subs_en'] = '';
     $variables['moderation'] = '';
     $variables['phoneline'] = 'pending';
@@ -258,6 +258,24 @@ function template_preprocess_audio_story_node_form(&$variables) {
 //    hide($variables['form']['field_subtitles_sent']);
 //    hide($variables['form']['field_subtitles_es_complete']);
 //    hide($variables['form']['field_subtitles_en_complete']);
+
+    if ($variables['form']['#node']->status === '1') {
+      $variables['readystate'] = 'LIVE';
+      $variables['readyclass'] = 'live';
+    } else if ($variables['form']['#node']->field_contentious['und'][0]['value'] === '1') {
+      $variables['readystate'] = 'Waiting for review';
+      $variables['readyclass'] = 'pending';
+    } else if ($variables['form']['#node']->field_to_edit['und'][0]['value'] === '1') {
+      $variables['readystate'] = 'Waiting for edit';
+      $variables['readyclass'] = 'pending';
+    } else if ($variables['form']['#node']->field_do_not_publish['und'][0]['value'] === '1') {
+      $variables['readystate'] = 'UNPUSBLISHED';
+      $variables['readyclass'] = 'unpublished';
+    } else {
+      $variables['readystate'] = 'Unmoderated';
+      $variables['readyclass'] = 'unmoderated';
+    };
+
     if($variables['form']['#node']->status === '1' && $variables['form']['#node']->field_moderated['und'][0]['value'] === '1') {
       $variables['phoneline'] = 'complete';
       $variables['moderation'] = 'complete';
