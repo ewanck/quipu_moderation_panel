@@ -51,7 +51,7 @@
   <div id="length"><?php print render($form['#node']->field_length['und'][0]['value']); ?></div>
   <div id="input_method"><?php echo $form['#node']->name; ?></div> -->
   <div id="submitted_date"><?php echo $form['#node']->date; ?></div>
-  <div id="audio_link"><a type="audio/mpeg" onClick="MyWindow=window.open('<?php print render($form['#node']->field_audio_link['und'][0]['value']); ?>','MyWindow','width=600,height=300'); return false;" href="#">PLAY ORIGINAL AUDIO</a></div>
+  <div id="audio_link"><a type="audio/mpeg" onClick="MyWindow=window.open('http://phoneline.quipu-project.com/sites/default/files/<?php print render($form['#node']->field_audio_file['und'][0]['filename']); ?>','MyWindow','width=600,height=300'); return false;" href="#">PLAY ORIGINAL AUDIO</a></div>
 
 </div>
 <!-- <div id="panel_right">
