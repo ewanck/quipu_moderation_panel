@@ -1,12 +1,43 @@
-#pop-up {
+#pop-up-container {
     position:fixed;
-    top:50%:
-    left:50%;
+    top:0px;
+    left:0px;
     display:none;
-    height:100px;
-    width:250px;
+    height:100%;
+    width:100%;
     text-align:center;
-    background-color:#555;
+    background-color:rgba(100,100,100,0.5);
+}
+
+#pop-up {
+    position:absolute;
+    top:50%;
+    left:50%;
+    width:500px;
+    height:200px;
+    background-color:#1c2d31;
+    color:white;
+    margin-left:-250px;
+    margin-top:-100px;
+    border-radius:10px;
+    padding:10px;
+}
+
+#pop-up-close {
+    position:absolute;
+    bottom:0px;
+    left:50%;
+    margin-left:-50px;
+    width:100px;
+    height:25px;
+    padding:5px;
+    border-radius:5px;
+    margin-bottom:15px;
+    background-color:rgba(200,200,200,0.2);
+}
+
+#pop-up-close:hover {
+    background-color:rgba(200,200,200,0.5);
 }
 
 .progress_light {

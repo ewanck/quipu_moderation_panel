@@ -1,7 +1,9 @@
 <?php drupal_add_css(drupal_get_path('module','moderation_panel').'/css/moderation.css', array('group'=> CSS_DEFAULT, 'type' => 'file')); ?>
 <?php drupal_add_css(drupal_get_path('theme','quipu_theme_1').'/css/archive.css', array('group'=> CSS_DEFAULT, 'type' => 'file')); ?>
+<?php drupal_add_js(drupal_get_path('module', 'moderation_panel').'/js/hotkeys.js'); ?>
 <?php drupal_add_js(drupal_get_path('module', 'moderation_panel').'/js/control_panel.js'); ?>
 <?php drupal_add_js(drupal_get_path('module', 'moderation_panel').'/js/audio-player.js'); ?>
+<?php drupal_add_js(array('moderation_panel' => array('NID' => $form['#node']->nid)), 'setting'); ?>
 <div id="panel-left">
   <div id="status-bar" class='<?php echo $readyclass; ?>'>
     <strong><?php echo $readystate; ?></strong>
@@ -30,6 +32,7 @@
   </div>
   <div id="audio_link"><a type="audio/mpeg" onClick="MyWindow=window.open('<?php print render($form['#node']->field_audio_link['und'][0]['value']); ?>','MyWindow','width=600,height=300'); return false;" href="#">Player not working? Click here to use old version.</a></div> 
   <div id="testimony-controls">
+    <?php if($form['#node']->field_audio_language['und'][0]['value'] != 'que'): ?>  
     <div id="controls-tabs">
       <div id="general-tab" class="tab-btn active">General</div>
       <div id="subtitles-tab" class="tab-btn">Subtitles></div>
@@ -75,6 +78,12 @@
         </td>
       </tr>
     </table>
+    <?php else: ?>
+    <form>
+      <input id="chunks" value="4" type="range" min="1" max="15" step="1" />
+      <input id="wait" value="2" type="range" min="1" max="15" step="1" />
+    </form>
+    <?php endif;?>
   </div>
 </div>
 <div id="panel_right">
@@ -82,6 +91,11 @@
     <div class="step"><strong>1.Language</strong></div>
     <?php print render($lang); ?>
   </div>
+  <?php if($form['#node']->field_audio_language['und'][0]['value'] == 'que'): ?>
+  <div class="section" id="quechua-trans">
+    <?php print render($form['field_que_es_transcript']); ?>
+  </div>
+  <?php else: ?>
   <div class="section"><table class="publish_controls">
     <tr>
       <td colspan="3"><div class="step"><strong>2.Moderation</strong></div></td>
@@ -146,6 +160,7 @@
 <!-- <div class="section_complete">
   <?php print render($moderated_btn); ?>
 </div> -->
+  <?php endif; ?>
   <div class="save">
     <?php print render($buttons); ?>
   </div>
@@ -155,4 +170,4 @@
     echo drupal_render_children($form); 
   ?>
 </div>
-<div id="pop-up"></div>
+<div id="pop-up-container"><div id="pop-up"><div id="pop-up-text"></div><div id="pop-up-close">Ok</div></div></div>

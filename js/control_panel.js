@@ -27,12 +27,15 @@ Drupal.behaviors.control_panel = {
 	});
 
 	$(".action-button").click(function() {
-	    $("#pop-up").css("display","block");
-	    $("#pop-up").text("");
-	    if($(this).attr('id') == 'pull-es') {
-		link = "http://sandbox.chakafilms.com/sandbox/projectquipu/amarasync/pull/es/";
-		$("#pop-up").load(link);
+	    $("#pop-up-container").css("display","block");
+	    $("#pop-up-text").text('Loading...');
+	    if($(this).attr('id') == 'refresh-link') {
+		link = "http://sandbox.chakafilms.com/sandbox/projectquipu/amarasync/push/null/" + settings.moderation_panel.NID;
+		$("#pop-up-text").load(link);
 	    };
+	    $("#pop-up-close").click(function() {
+		$("#pop-up-container").css("display", "none");
+	    });
 	});
 	$("#general-tab").click(function() {
 	    $("#general-panel").css("display", "block");

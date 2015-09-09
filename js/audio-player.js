@@ -59,6 +59,45 @@ Drupal.behaviors.player = {
 	    return window.webkitAudioContext || window.AudioContext || window.mozAudioContext;
 	})();
 
+	$(document).bind('keydown', 'tab', function(event) {
+	    event.preventDefault();
+	    play_pause();
+	});
+
+	$(document).bind('keydown', 'shift+tab', function(event) {
+	    event.preventDefault();
+	    audioUrl.currentTime = audioUrl.currentTime - 2;
+	});
+
+	$(document).bind('keydown', 'ctrl+shift+,', function(event) {
+	    event.preventDefault();
+	    audioUrl.currentTime = audioUrl.currentTime - 4;
+	});
+
+	$(document).bind('keydown', 'ctrl+shift+.', function(event) {
+	    event.preventDefault();
+	    audioUrl.currentTime = audioUrl.currentTime + 4;
+	});
+
+	$('#edit-field-que-es-transcript-und-0-value').bind('keydown', 'tab', function(event) {
+	    event.preventDefault();
+	    play_pause();
+	});
+
+	$('#edit-field-que-es-transcript-und-0-value').bind('keydown', 'shift+tab', function(event) {
+	    event.preventDefault();
+	    audioUrl.currentTime = audioUrl.currentTime - 2;
+	});
+
+	$('#edit-field-que-es-transcript-und-0-value').bind('keydown', 'ctrl+shift+,', function(event) {
+	    event.preventDefault();
+	    audioUrl.currentTime = audioUrl.currentTime - 4;
+	});
+
+	$('#edit-field-que-es-transcript-und-0-value').bind('keydown', 'ctrl+shift+.', function(event) {
+	    event.preventDefault();
+	    audioUrl.currentTime = audioUrl.currentTime + 4;
+	});
 
 	function print_subtitle(text) {
 	    container = '#subtitle-container';
