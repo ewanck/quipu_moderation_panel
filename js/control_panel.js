@@ -14,19 +14,46 @@
 
 
 // To understand behaviors, see https://drupal.org/node/756722#behaviors
-Drupal.behaviors.my_custom_behavior = {
-  attach: function(context, settings) {
+Drupal.behaviors.control_panel = {
+    attach: function(context, settings) {
+	$(window).scroll(function(e) {
+	    $el = $('#panel-left'); 
+            if ($(this).scrollTop() > 80 && $el.css('position') != 'fixed') { 
+		$('#panel-left').css({'position': 'fixed', 'top': '0px'}); 
+	    };
+	    if ($(this).scrollTop() < 80 && $el.css('position') == 'fixed') {
+		$('#panel-left').css({'position': 'static', 'top': '0px'}); 
+	    };
+	});
 
-      $(".action-button").click(function() {
-	  $("#pop-up").css("display","block");
-	  $("#pop-up").text("");
-	  if($(this).attr('id') == 'pull-es') {
-	      link = "http://sandbox.chakafilms.com/sandbox/projectquipu/amarasync/pull/es/" 
-	  $("#pop-up").load(link);
-      });
+	$(".action-button").click(function() {
+	    $("#pop-up").css("display","block");
+	    $("#pop-up").text("");
+	    if($(this).attr('id') == 'pull-es') {
+		link = "http://sandbox.chakafilms.com/sandbox/projectquipu/amarasync/pull/es/";
+		$("#pop-up").load(link);
+	    };
+	});
+	$("#general-tab").click(function() {
+	    $("#general-panel").css("display", "block");
+	    $("#subtitle-panel").css("display","none");
+	    $(".tab-btn").removeClass("active");
+	    $(this).addClass("active");
+	});
 
-  }
-};
+	$("#subtitles-tab").click(function() {
+	    $("#general-panel").css("display", "none");
+	    $("#subtitle-panel").css("display","block");
+	    $(".tab-btn").removeClass("active");
+	    $(this).addClass("active");
+	});
+
+	$(".single-option label").click(function() {
+	    $(".single-option input").prop("checked", false);
+	    $(this).prop("checked", true);
+	});
+    }
+}
 
 
 })(jQuery, Drupal, this, this.document);

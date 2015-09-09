@@ -44,35 +44,164 @@
     float:right;
 }
 
-#panel_right {
+#status-bar {
+    width:250px;
+    height:20px;
+    color:white;
+    background-color:grey;
     float:right;
-    width:500px;
-    position:relative;
-    top:250px;
-    float:right;
-    left:100px;
+    border-top-left-radius:10px;
+    border-bottom-left-radius:10px;
+    margin-bottom:10px;
+    margin-right:-20px;
+    padding:3px 0px 3px 20px;
+    font-size:14px;
+}
+
+#status-bar.unpublished {
+    background-color:red;
+}
+
+#status-bar.pending {
+    background-color:orange;
+}
+
+#status-bar.live {
+    background-color:green;
 }
 
 #testimony-controls {
+    margin-top:30px;
+}
+
+#controls-tabs {
+    width: 95%;
+    border-bottom: 1px solid grey;
+    padding-left:10px;
+    margin-bottom:20px;
+}
+
+.tab-btn {
+    padding: 3px 5px;
+    height: 20px;
+    text-align:center;
+    border:1px solid grey;
+    border-bottom:none;
+    display:inline-block;
+    margin:0px;
+    border-top-left-radius:5px;
+    border-top-right-radius:5px;
+    background:#DDD;
+}
+
+#subtitle-panel {
+    display:none;
+}
+
+.active {
+    background:white;
+}
+
+.individual #player-time, .individual #player-date {
     float:right;
-    width:600px;;
+}
+
+.individual #player-close-btn {
+    background:none;
+    color:#CCC;
+    font-size:14px;
+    cursor:auto;
+    margin:17px;
+    width:auto;
+    height:auto;
+}
+
+#panel_right {
+    float:right;
+    width:47%;
+    position:relative;
+    padding:5px 20px 0px 5px;
+    display:inline-block;
+}
+
+#page {
+    margin:0px!important;
+    padding:0px!important;
+}
+
+#panel-left {
+    height:100vh;
+    display:inline-block;
+    float:left;
+    padding:10px 20px 10px 20px;
+    position:relative;
+    -webkit-box-shadow: 3px 4px 6px 0px rgba(92,92,92,1);
+    -moz-box-shadow: 3px 4px 6px 0px rgba(92,92,92,1);
+    box-shadow: 3px 4px 6px 0px rgba(92,92,92,1);
+}
+
+table, tr, td {
+    border:none!important;
+}
+
+.section {
+    width:100%;
+    border-bottom:1px dashed grey;
+    padding: 15px;
+}
+
+#edit-field-audio-language-und {
+    font-size:17pt;
+    margin-left:15px;
+    width:250px;
+}
+
+#edit-field-audio-language label {
+    display:none;
+}
+
+.form-type-textfield {
+    padding:9px 15px 9px 0px!important;
+}
+
+.step {
+    font-size:25pt;
+    color:#555;
+    padding:15px 10px;
+}
+
+td div.step {
+    padding:0px;
+}
+
+.instruction, #panel_right div.description {
+    line-height: 1.231em;
+    font-size: 11px;
+    color: #666;
+}
+
+input.form-text {
+    width:100%;
+}
+
+#testimony-controls {
+    width:600px;
 }
 
 .text_input table {
     width:40%;
 }
 .publish_controls {
-    float:right;
     
 }
 
 .action-button {
     width:175px;
-    height:50px;
+    height:30px;
     background-color:#AAA;
     border-radius:20px;
     text-align:center;
-    padding-top:15px;
+    padding-top:10px;
 }
 
 .action-button:hover {
@@ -95,14 +224,14 @@ input[type=checkbox]:not(old) {
     width   : 28px;
     margin  : 0;
     padding : 0;
-    opacity : 1;
+    opacity : 0;
 }
 
 .publish_controls input[type=checkbox]:not(old) + label{
     display:inline-block;
     padding-top:20px;
     text-align:center;
-    width:200px;
+    width:175px;
     height:50px;
     background-color:#AAA;
 }
