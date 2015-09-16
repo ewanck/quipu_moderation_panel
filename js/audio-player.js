@@ -79,7 +79,7 @@ Drupal.behaviors.player = {
 	    audioUrl.currentTime = audioUrl.currentTime + 4;
 	});
 
-	$('#edit-field-que-es-transcript-und-0-value').bind('keydown', 'tab', function(event) {
+/*	$('#edit-field-que-es-transcript-und-0-value').bind('keydown', 'tab', function(event) {
 	    event.preventDefault();
 	    play_pause();
 	});
@@ -97,7 +97,7 @@ Drupal.behaviors.player = {
 	$('#edit-field-que-es-transcript-und-0-value').bind('keydown', 'ctrl+shift+.', function(event) {
 	    event.preventDefault();
 	    audioUrl.currentTime = audioUrl.currentTime + 4;
-	});
+	}); */
 
 	function print_subtitle(text) {
 	    container = '#subtitle-container';

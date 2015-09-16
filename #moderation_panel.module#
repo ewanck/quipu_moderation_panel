@@ -1,0 +1,305 @@
+<?php
+
+function moderation_panel_block_info() {
+  $blocks['moderation_panel'] = array(
+    // The name that will appear in the block list.
+    'info' => t('moderation panel'),
+    // Default setting.
+    'cache' => DRUPAL_CACHE_PER_ROLE,
+  );
+  return $blocks;
+}
+
+function moderation_panel_block_view($delta = '') {
+  switch ($delta) {
+    case 'moderation_panel':
+      $block['subject'] = t('Publish Data');
+      if (user_access('access content')) {
+        $items = array();
+       // No content in the last week.
+        if (empty($items)) {
+          $block['content'] = '<form method="post" action="http://phoneline.quipu-project.com/publishdata"><input value="Publish Data" type="submit"></form>';
+        }
+        else {
+          // Pass data through theme function.
+          $block['content'] = theme('item_list', array(
+            'items' => $items));
+        }
+      }
+    return $block;
+  }
+}
+
+function moderation_panel_menu() {
+  $item['publishdata'] = array(
+    'type' => MENU_CALLBACK,
+    'page callback' => 'moderation_panel_publish_data',
+    'access arguments' => array('access content'),
+    'delivery callback' => 'drupal_json_output',
+  );
+  return $item;
+};
+
+function moderation_panel_publish_data() {
+  $testimonies = moderation_panel_load_ready();
+  $csv = "";
+//  foreach ($testimonies as $testimony) {
+//    $csv .= sprintf("%s,%s,%s,%s,%s,%s,%s,%s\n",$testimony['filename'], $testimony['name'], $testimony['audio_file'], $testimony['srt'], $testimony['length'], $testimony['gender'], $testimony['location'], $testimony['date']);
+//  };
+  $json = drupal_json_encode($testimonies);
+  $json_file = file_save_data($json, 'public://output/data.json', FILE_EXISTS_REPLACE);
+  $file = file_save_data($csv, 'public://output/data.csv', FILE_EXISTS_REPLACE);
+  return $file->uri;
+};
+
+function moderation_panel_load_ready() {
+  $callback = array();
+  $query = new EntityFieldQuery();
+  $query->entityCondition('entity_type', 'node')
+//    ->fieldCondition('field_moderated', 'value', 1, '=')
+    ->fieldCondition('field_subtitles_es_complete', 'value', 1, '=')
+    ->fieldCondition('field_subtitles_en_complete', 'value', 1, '=')
+    ->propertyCondition('status', 1)
+    ->propertyCondition('type', 'audio_story')
+    ->propertyOrderBy('created', 'DESC');
+  $results = $query->execute();
+  if (isset($results['node'])) {
+    $nodes = node_load_multiple(array_keys($results['node']));
+    foreach ($nodes as $node) {
+      $filename = $node->title;
+      $length = field_get_items('node', $node, 'field_length');
+      if($node->field_to_edit['und'][0]['value'] == 1) {
+      	$audio_link = $node->field_basic_edit['und'][0]['filename'];
+      } else {
+        $audio_link = $node->field_audio_file['und'][0]['filename'];
+      };
+
+//      $audio_file = explode( '/', $node->field_audio_link['und'][0]['value']);
+      $name = field_get_items('node', $node, 'field_name');
+      $location = field_get_items('node', $node, 'field_narrative_location');
+      $gender = field_get_items('node', $node, 'field_gender');
+      $role = taxonomy_term_load($node->field_narrative_role['und'][0]['tid']);
+      $user = user_load($node->uid);
+      if ($user->name == 'Guest') {
+        $source = 'Internet';
+      } else {
+        $source = 'Phoneline';
+      };
+      $srt = $node->field_srt_en['und'][0]['filename'];
+      $knots = field_get_items('node', $node, 'field_knots_file');
+      if ($knots) {
+        $knots_obj = csv_to_json($knots[0]['uri'], $filename, $name);
+      } else {
+        $knots_obj = array();
+      };
+      $testimony = array(
+        'Audio Lang' => $node->field_audio_language['und'][0]['value'],
+	'Filename' => $audio_link,
+	'Gender' => $gender[0]['value'],
+	'Length' => $length[0]['value'],
+	'Location' => $location[0]['value'],
+	'Name' => $name[0]['value'],
+	'Phoneline / Internet' => $source,
+	'Role' => $role->name,
+	'SRT' => $srt,
+        'UID' => $filename,
+	'events' => $knots_obj,
+	'next' => array('blank' => null),
+      );
+      $callback[$filename] = $testimony;
+    };
+  };
+  return $callback; 
+};
+
+function csv_to_json($uri, $uid, $name) {
+  $result = array();
+  $i = 0;
+  $file = fopen($uri,"r");
+  while(! feof($file))  {
+    $line = fgetcsv($file);
+    if ($i > 0) {
+      $result[] = array(
+        'Action' => $line[3],
+        'File' => $line[7],
+        'LibraryName' => $line[6],
+        'MediaType' => $line[5],
+        'Name' => $name[0]['value'],
+        'Tag' => $line[0],
+        'UID' => $uid,
+        'isKnot' => $line[4],
+        'time_in' => $line[1],
+        'time_out' => $line[2],
+      );
+    };
+    $i = $i + 1;
+  };
+  fclose($file);
+  return $result;
+}
+
+function moderation_panel_theme($existing, $type, $theme, $path) {
+  return array(
+    'audio_story_node_form' => array(
+      'render element' => 'form',
+      'template' => 'audio-story-node-form',
+      // this will set to module/theme path by default:
+      'path' => drupal_get_path('module', 'moderation_panel'),
+    ),
+    'audio_feedback_node_form' => array(
+      'render element' => 'form',
+      'template' => 'audio-feedback-node-form',
+      // this will set to module/theme path by default:
+      'path' => drupal_get_path('module', 'moderation_panel'),
+    ),
+  );
+}
+
+function template_preprocess_audio_feedback_node_form(&$variables) {
+  $variables['name_input'] = $variables['form']['title'];
+  $variables['location'] = $variables['form']['field_location'];
+  $variables['email'] = $variables['form']['field_email'];
+  $variables['recorder'] = $variables['form']['field_audiomessage'];
+  $variables['role'] = $variables['form']['field_narrative_role'];
+  $variables['length'] = $variables['form']['field_length'];
+  $variables['lang'] = $variables['form']['field_audio_language'];
+  $variables['name'] = $variables['form']['field_name'];
+  $variables['es_comp'] = $variables['form']['field_subtitles_es_complete'];
+  $variables['en_comp'] = $variables['form']['field_subtitles_en_complete'];
+  hide($variables['form']['field_narrative_role']);
+  hide($variables['form']['field_subtitles_es_complete']);
+  hide($variables['form']['field_subtitles_en_complete']);
+  hide($variables['form']['field_length']);
+  hide($variables['form']['field_audio_language']);
+  hide($variables['form']['field_audiomessage']);
+  hide($variables['form']['title']);
+  hide($variables['form']['field_location']);
+  hide($variables['form']['field_email']);
+  hide($variables['form']['field_name']);
+  hide($variables['form']['field_subtitles_sent']);
+  hide($variables['form']['field_subtitles_id']);
+  hide($variables['form']['field_in']);
+  hide($variables['form']['field_out']);
+  hide($variables['form']['field_subtitle']);
+  hide($variables['form']['field_in_en']);
+  hide($variables['form']['field_out_en']);
+  hide($variables['form']['field_subtitle_en']);
+  hide($variables['form']['field_moderated']);
+}
+
+function template_preprocess_audio_story_node_form(&$variables) {
+  // nodeformcols is an alternative for this solution.
+  if (!module_exists('nodeformcols')) {
+//    $variables['sidebar'] = array();   // Put taxonomy fields in sidebar.
+//    $variables['sidebar'][] = $variables['form']['field_tags'];
+//    hide($variables['form']['field_tags']);
+    // Extract the form buttons, and put them in independent variable.
+    $variables['buttons'] = $variables['form']['actions'];
+    $variables['publish'] = $variables['form']['options']['status'];
+    $variables['sticky'] = $variables['form']['options']['sticky'];
+    hide($variables['form']['actions']);
+//    hide($variables['form']['body']);
+//    hide($variables['form']['field_in']);
+//    hide($variables['form']['field_out']);
+//    hide($variables['form']['field_subtitle']);
+//    hide($variables['form']['field_subtitles_id']);
+//    hide($variables['form']['field_in_en']);
+//    hide($variables['form']['field_out_en']);
+//    hide($variables['form']['field_subtitle_en']);
+//    hide($variables['form']['field_recording_fid']);
+//    hide($variables['form']['field_length']);
+//    hide($variables['form']['field_audio_link']);
+    hide($variables['form']['options']);
+    hide($variables['form']['additional_settings']);
+    hide($variables['form']['author']);
+    hide($variables['form']['comment_settings']);
+//    hide($variables['form']['field_audio_file']);
+//    hide($variables['form']['field_english_transcript']);
+//    hide($variables['form']['field_to_subtitle']);
+
+    $variables['title'] = $variables['form']['title'];
+    hide($variables['form']['title']);
+    $variables['name'] = $variables['form']['field_name'];
+    hide($variables['form']['field_name']);
+    $variables['lang'] = $variables['form']['field_audio_language'];
+    hide($variables['form']['field_audio_language']);
+    $variables['role'] = $variables['form']['field_narrative_role'];
+    hide($variables['form']['field_narrative_role']);
+    $variables['moderated_btn'] = $variables['form']['field_moderated'];
+    hide($variables['form']['field_moderated']);
+    $variables['notes'] = $variables['form']['field_moderator_notes'];
+    hide($variables['form']['field_moderator_notes']);
+    $variables['gender'] = $variables['form']['field_gender'];
+    hide($variables['form']['field_gender']);
+    $variables['location'] = $variables['form']['field_narrative_location'];
+    hide($variables['form']['field_narrative_location']);
+    $variables['srt_en'] = $variables['form']['field_srt_en'];
+    hide($variables['form']['field_srt_en']);
+    $variables['srt_es'] = $variables['form']['field_srt_es'];
+    hide($variables['form']['field_srt_es']);
+    $variables['to_edit'] = $variables['form']['field_to_edit'];
+    hide($variables['form']['field_to_edit']);
+    $variables['basic_edit'] = $variables['form']['field_basic_edit'];
+    hide($variables['form']['field_basic_edit']);
+    $variables['knots_file'] = $variables['form']['field_knots_file'];
+    hide($variables['form']['field_knots_file']);
+    $variables['donotpublish'] = $variables['form']['field_do_not_publish'];
+    hide($variables['form']['field_do_not_publish']);
+    $variables['contentious'] = $variables['form']['field_contentious'];
+    hide($variables['form']['field_contentious']);
+
+    $variables['readystate'] = 'Unmoderated';
+    $variables['readyclass'] = 'unmoderated';
+    $variables['subs_en'] = '';
+    $variables['moderation'] = '';
+    $variables['phoneline'] = 'pending';
+    $variables['internet'] = 'pending';
+
+//    hide($variables['form']['field_subtitles_sent']);
+//    hide($variables['form']['field_subtitles_es_complete']);
+//    hide($variables['form']['field_subtitles_en_complete']);
+
+    if ($variables['form']['#node']->status === '1') {
+      $variables['readystate'] = 'LIVE';
+      $variables['readyclass'] = 'live';
+    } else if ($variables['form']['#node']->field_contentious['und'][0]['value'] === '1') {
+      $variables['readystate'] = 'Waiting for review';
+      $variables['readyclass'] = 'pending';
+    } else if ($variables['form']['#node']->field_to_edit['und'][0]['value'] === '1') {
+      $variables['readystate'] = 'Waiting for edit';
+      $variables['readyclass'] = 'pending';
+    } else if ($variables['form']['#node']->field_do_not_publish['und'][0]['value'] === '1') {
+      $variables['readystate'] = 'UNPUSBLISHED';
+      $variables['readyclass'] = 'unpublished';
+    } else {
+      $variables['readystate'] = 'Unmoderated';
+      $variables['readyclass'] = 'unmoderated';
+    };
+
+    if($variables['form']['#node']->status === '1' && $variables['form']['#node']->field_moderated['und'][0]['value'] === '1') {
+      $variables['phoneline'] = 'complete';
+      $variables['moderation'] = 'complete';
+      $variables['subs_sent'] = 'pending';
+      $variables['internet'] = 'pending';
+    }
+    if($variables['form']['#node']->status === '0' && $variables['form']['#node']->field_moderated['und'][0]['value'] === '1') {
+      $variables['phoneline'] = 'failed';
+      $variables['internet'] = 'failed';
+      $variables['moderation'] = 'failed';
+    }
+    if($variables['form']['#node']->status === '1' && $variables['form']['#node']->field_moderated['und'][0]['value'] === '1' && $variables['subs_en'] === '1' && $variables['subs_es'] === '1') {
+      $variables['internet'] = 'complete';
+    }    
+    if($variables['form']['#node']->field_subtitles_sent['und'][0]['value'] === '1') {
+      $variables['subs_sent'] = 'complete';
+      $variables['subs_es'] = 'pending';
+      $variables['subs_en'] = 'pending';
+    };
+    if($variables['form']['#node']->field_subtitles_es_complete['und'][0]['value'] === '1') {
+      $variables['subs_es'] = 'complete';
+    }
+    if($variables['form']['#node']->field_subtitles_en_complete['und'][0]['value'] === '1') {
+      $variables['subs_en'] = 'complete';
+    }
+  }
+}
