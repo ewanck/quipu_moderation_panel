@@ -84,11 +84,6 @@
     <div class="step"><strong>1.Language</strong></div>
     <?php print render($lang); ?>
   </div>
-<!--  <?php if($form['#node']->field_audio_language['und'][0]['value'] == 'que'): ?>
-  <div class="section" id="quechua-trans">
-    <?php print render($form['field_que_es_transcript']); ?>
-  </div> -->
-<!--  <?php //else: ?> -->
   <div class="section"><table class="publish_controls">
     <tr>
       <td colspan="3"><div class="step"><strong>2.Moderation</strong></div></td>
@@ -152,8 +147,7 @@
   </div>
 <!-- <div class="section_complete">
      <?php print render($moderated_btn); ?>
-  </div>
-  <?php endif; ?> -->
+  </div> -->
   <div class="save">
     <?php print render($buttons); ?>
   </div>
